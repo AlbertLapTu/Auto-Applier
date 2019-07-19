@@ -1,0 +1,7 @@
+#Folders
+node_modules
+
+#Files
+.DS_STORE
+checklist.md
+config_test_file.js
