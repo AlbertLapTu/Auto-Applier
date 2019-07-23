@@ -1,25 +1,12 @@
 const puppeteer = require('puppeteer');
 const { username, password } = require('../config/config_test_file.js');
 
-/*
-
-Example on how to launch pupetteer
-
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://reddit.com');
-  await page.screenshot({ path: 'samplePage.jpg' });
-
-  await browser.close();
-})();
-
-*/
-
 /**
- * @description: Headless browser triggers a captcha page. Must open up Chromium by setting the
- * headless option to false and log in through that.
+ * @description: Running this function with headless set to true triggers a captcha page and will break
+ * the function. Always set headless to be false in order to not trigger captcha page.
+ *
  */
+
 const logIn = async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
@@ -30,13 +17,11 @@ const logIn = async () => {
 
   try {
     await page.goto(loginPage);
-    await page.waitForSelector('#user_email');
-    await page.type('#user_email', username);
-    await page.waitForSelector('#user_password');
-    await page.type('#user_password', password);
-    await page.click('.c-button');
-
-    await page.screenshot({ path: 'samplePage.jpg' });
+    await page.waitForSelector(emailTextField);
+    await page.type(emailTextField, username);
+    await page.waitForSelector(passwordTextField);
+    await page.type(passwordTextField, password);
+    await page.click(submitBtn);
   } catch (err) {
     throw new Error('Invalid error logging in. Check headless browser setting');
   }
