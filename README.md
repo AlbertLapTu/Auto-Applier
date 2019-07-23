@@ -7,6 +7,9 @@ a company takes too much time, so I wanted to see if I could automate this workf
 
 ## Installing
 
+- Clone/fork this repo to your local repository.
+- Run npm install from the root of this project
+
 ## Dependencies/Requirements
 
 ### Documentation

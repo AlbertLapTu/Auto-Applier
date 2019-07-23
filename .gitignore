@@ -1,7 +1,10 @@
 #Folders
 node_modules
+config
 
 #Files
 .DS_STORE
 checklist.md
 config_test_file.js
+client_secret.json
+UserFlow.md
