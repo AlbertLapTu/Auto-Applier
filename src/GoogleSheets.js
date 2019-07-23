@@ -7,11 +7,20 @@ const { promisify } = require('util');
  *
  * @description: This function will automatically grab all of the rows within the first spreadsheet
  * that you have listed, and returns back an array of objects that contain all the columns/rows.
+ *
+ * Data shape is:
+ * {
+ * _xml:
+ * id
+ * _links:
+ * all the headers
+ * save: function
+ * del: function
+ * }
  */
 const getSpreadsheetAccess = async () => {
   const doc = new GoogleSpreadsheet(spreadsheetId);
   await promisify(doc.useServiceAccountAuth)(creds);
-  // doc.getRows(1, (err, rows) => console.log(rows));
   const sheetInfo = await promisify(doc.getInfo)();
   const currentSheet = sheetInfo.worksheets[0];
 
@@ -21,13 +30,22 @@ const getSpreadsheetAccess = async () => {
     query: 'applied = no and hashyperlink = true'
   });
 
-  console.log(rows);
+  /**
+   * @description: Return value rows is an array of spreadsheet items for that specific sheet.
+   */
   return rows;
 };
 
-getSpreadsheetAccess();
+const writeToSpreadsheet = async () => {
+  let rows = await getSpreadsheetAccess();
+  const currentDate = new Date().toLocaleDateString();
 
-/**
- * @description: updateSpreadsheet will update the date in which you applied, and will update with
- * the recruiter name, email and domain?
- */
+  //Need to add in the recruiter name, and recruiter email, and update domain
+  rows.forEach(entry => {
+    entry.date = currentDate;
+    entry.applied = 'yes';
+    entry.save();
+  });
+};
+
+writeToSpreadsheet();
