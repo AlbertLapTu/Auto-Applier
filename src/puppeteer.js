@@ -41,86 +41,91 @@ const getTextValue = async (page, selector) => {
     await page.waitForSelector(selector);
     const element = await page.$(selector);
     innerText = page.evaluate(element => element.textContent, element);
-  } catch {
-    innerText = '';
+  } catch (err) {
+    throw new Error('No inner text available');
   }
   return innerText;
 };
 
-//TODO: Pass in page, and eliminate the need to open up a new page
-const parseCompanyAndJobTitle = async url => {
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
+const parseCompanyAndJobTitle = async (page, url) => {
   const header = '.u-colorGray3';
 
   try {
     await page.goto(url);
-
     const companyAndTitle = await getTextValue(page, header);
     const splitHeader = companyAndTitle.split(' at ');
-    const jobTitle = splitHeader[0];
+    let jobTitle = splitHeader[0];
+
+    //TODO: Test to see if this works
+    if (jobTitle.includes('-')) {
+      jobTitle = jobTitle.split(' - ')[0];
+    }
+
     const company = splitHeader[1];
 
     return [jobTitle, company];
   } catch (err) {
-    console.log(err);
+    throw new Error('Error retrieving job title and company name');
   }
 };
 
 //TODO: Fix Bug
-const getRecruiterName = async () => {
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
+const getRecruiterName = async page => {
   const applyNowButtonClass = '.buttons.js-apply.applicant-flow-dropdown';
-  // const shareBtn = '.ds31.shared.fje97.job_showcase_share._a._jm';
 
   try {
     const recruiterName = '.name';
-    await logIn(page);
-    await page.goto(
-      'https://angel.co/company/swiftlane/jobs/559263-software-engineer-infra-and-backend'
-    );
     await page.waitForSelector(applyNowButtonClass);
-    // await page.waitForSelector(shareBtn);
     await page.click(applyNowButtonClass, { delay: 1000 });
-    // await page.waitForSelector('.blue.facebook.g-button');
     await page.waitForSelector(recruiterName);
     const recruiter = await getTextValue(page, recruiterName);
 
     return recruiter;
   } catch (err) {
-    console.log('Error retrieving recruiter name');
+    throw new Error('Cant retrieve recruiter name');
   }
 };
 
 //ADD IN PAGE
-const getDomainName = async () => {
+const getDomainName = async (page, url) => {
   const domainClassName = '.website-link';
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
 
   try {
-    await page.goto(
-      'https://angel.co/company/swiftlane/jobs/559263-software-engineer-infra-and-backend'
-    );
+    await page.goto(url);
     await page.waitForSelector(domainClassName);
 
     let result = await getTextValue(page, domainClassName);
-    console.log(result, 'domainName');
     return result;
   } catch (err) {
-    console.log(err);
+    throw new Error('error receiving domain name');
   }
 };
 
-const pasteCoverLetter = (hiringManager, position, company) => {
-  return coverLetter(hiringManager, position, company);
+const pasteCoverLetter = async (page, hiringManager, position, company) => {
+  const textArea = 'textarea[name=note]';
+  const sendApplicationButton = '.c-button.c-button--blue';
+
+  try {
+    await page.waitFor('.container');
+    await page.waitForSelector(textArea);
+    const coverLetterText = await coverLetter(hiringManager, position, company);
+    await page.type(textArea, coverLetterText);
+  } catch (err) {
+    throw new Error('Error in pasteCoverLetter function');
+  }
 };
 
+// FIX URL to be the URL you get from the Google sheet
 const apply = async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
+  const URL = 'https://angel.co/company/swiftlane/jobs/559263-software-engineer-infra-and-backend';
 
   await logIn(page);
-  let result = await getTextValue(page, '.startup-link');
+  await page.goto(URL);
+  const [jobTitle, company] = await parseCompanyAndJobTitle(page, URL);
+  const domainName = await getDomainName(page, URL);
+  const recruiter = await getRecruiterName(page);
+
+  await pasteCoverLetter(page, recruiter, jobTitle, company);
 };
