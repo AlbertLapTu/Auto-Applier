@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const { username, password } = require('../config/config_test_file.js');
+const { coverLetter } = require('./coverLetter.js');
 
 /**
  *
@@ -67,7 +68,7 @@ const parseCompanyAndJobTitle = async url => {
 };
 
 //TODO: Fix Bug
-const getRecruiterName = async page => {
+const getRecruiterName = async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   const applyNowButtonClass = '.buttons.js-apply.applicant-flow-dropdown';
@@ -93,7 +94,7 @@ const getRecruiterName = async page => {
 };
 
 //ADD IN PAGE
-const getDomainName = async page => {
+const getDomainName = async () => {
   const domainClassName = '.website-link';
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
@@ -112,7 +113,9 @@ const getDomainName = async page => {
   }
 };
 
-const pasteCoverLetter = () => {};
+const pasteCoverLetter = (hiringManager, position, company) => {
+  return coverLetter(hiringManager, position, company);
+};
 
 const apply = async () => {
   const browser = await puppeteer.launch({ headless: false });
