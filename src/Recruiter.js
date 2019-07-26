@@ -2,9 +2,9 @@ const { clearbitKey } = require('../config/config_test_file.js');
 const clearbit = require('clearbit')(clearbitKey);
 
 class Recruiter {
-  constructor(domainName, fullName) {
-    this.domainName = domainName;
+  constructor(fullName, domainName) {
     this.fullName = fullName;
+    this.domainName = domainName;
   }
 
   findRecruiter() {
