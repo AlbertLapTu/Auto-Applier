@@ -6,6 +6,7 @@ const { username, password } = require('../config/config_test_file.js');
  * @param {string} page
  * @description: page refers to the browser page that is instantiated with a headless value of false
  */
+
 const logIn = async page => {
   const loginPage = 'https://angel.co/login';
   const emailTextField = '#user_email';
@@ -49,35 +50,74 @@ const getTextValue = async (page, selector) => {
 const parseCompanyAndJobTitle = async url => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
-
-  await page.goto(url);
-
   const header = '.u-colorGray3';
-  const companyAndTitle = await getTextValue(page, header);
-  const splitHeader = companyAndTitle.split(' at ');
-  const jobTitle = splitHeader[0];
-  const company = splitHeader[1];
 
-  return [jobTitle, company];
+  try {
+    await page.goto(url);
+
+    const companyAndTitle = await getTextValue(page, header);
+    const splitHeader = companyAndTitle.split(' at ');
+    const jobTitle = splitHeader[0];
+    const company = splitHeader[1];
+
+    return [jobTitle, company];
+  } catch (err) {
+    console.log(err);
+  }
 };
+
+//TODO: Fix Bug
+const getRecruiterName = async page => {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  const applyNowButtonClass = '.buttons.js-apply.applicant-flow-dropdown';
+  // const shareBtn = '.ds31.shared.fje97.job_showcase_share._a._jm';
+
+  try {
+    const recruiterName = '.name';
+    await logIn(page);
+    await page.goto(
+      'https://angel.co/company/swiftlane/jobs/559263-software-engineer-infra-and-backend'
+    );
+    await page.waitForSelector(applyNowButtonClass);
+    // await page.waitForSelector(shareBtn);
+    await page.click(applyNowButtonClass, { delay: 1000 });
+    // await page.waitForSelector('.blue.facebook.g-button');
+    await page.waitForSelector(recruiterName);
+    const recruiter = await getTextValue(page, recruiterName);
+
+    return recruiter;
+  } catch (err) {
+    console.log('Error retrieving recruiter name');
+  }
+};
+
+//ADD IN PAGE
+const getDomainName = async page => {
+  const domainClassName = '.website-link';
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+
+  try {
+    await page.goto(
+      'https://angel.co/company/swiftlane/jobs/559263-software-engineer-infra-and-backend'
+    );
+    await page.waitForSelector(domainClassName);
+
+    let result = await getTextValue(page, domainClassName);
+    console.log(result, 'domainName');
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const pasteCoverLetter = () => {};
 
 const apply = async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
   await logIn(page);
-
   let result = await getTextValue(page, '.startup-link');
 };
-
-apply();
-
-/*
-TODO: 
-- Write the following functions: 
-  - Get company name
-  - Get recruiter name
-  - Get position
-  - Format recruiter name
-  
-*/
