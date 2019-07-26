@@ -10,11 +10,17 @@ class Recruiter {
   findRecruiter() {
     if (this.domainName && this.fullName) {
       return clearbit.Prospector.search({
-        domain: this.domain,
+        domain: this.domainName,
         name: this.fullName
-      }).then(persons => (persons.results.length ? persons.results[0].email : null));
+      }).then(persons => {
+        if (persons.length > 0) {
+          return persons.results[0].email;
+        } else {
+          return null;
+        }
+      });
     } else {
-      return null;
+      throw new Error('No domain name or full name provided');
     }
   }
 }
