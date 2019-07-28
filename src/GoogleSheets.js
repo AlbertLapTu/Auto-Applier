@@ -36,7 +36,6 @@ const parseJobLinks = async () => {
   for (let i = 0; i < googleSheetEntries.length; i++) {
     jobLinks.push(googleSheetEntries[i].link);
   }
-  console.log(jobLinks);
   return jobLinks;
 };
 
