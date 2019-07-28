@@ -1,5 +1,5 @@
-const puppeteer = require('puppeteer');
 const { username, password } = require('../config/config_test_file.js');
+const { Job } = require('./Classes/Job');
 const { coverLetter } = require('./coverLetter.js');
 
 /**
@@ -47,11 +47,11 @@ const getTextValue = async (page, selector) => {
   return innerText;
 };
 
-const parseCompanyAndJobTitle = async (page, url) => {
+const parseCompanyAndJobTitle = async page => {
   const header = '.u-colorGray3';
 
   try {
-    await page.goto(url);
+    // await page.goto(url);
     const companyAndTitle = await getTextValue(page, header);
     const splitHeader = companyAndTitle.split(' at ');
     let jobTitle = splitHeader[0];
@@ -69,7 +69,6 @@ const parseCompanyAndJobTitle = async (page, url) => {
   }
 };
 
-//TODO: Fix Bug
 const getRecruiterName = async page => {
   const applyNowButtonClass = '.buttons.js-apply.applicant-flow-dropdown';
 
@@ -86,7 +85,6 @@ const getRecruiterName = async page => {
   }
 };
 
-//ADD IN PAGE
 const getDomainName = async (page, url) => {
   const domainClassName = '.website-link';
 
@@ -115,17 +113,66 @@ const pasteCoverLetter = async (page, hiringManager, position, company) => {
   }
 };
 
-// FIX URL to be the URL you get from the Google sheet
-const apply = async () => {
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
-  const URL = 'https://angel.co/company/swiftlane/jobs/559263-software-engineer-infra-and-backend';
+/**
+ *
+ * @description: Creates a new job class object. Intended to use in the update spreadsheet function such
+ * that we can update each job.
+ *
+ * Job class requires company, position, date, hasApplied, recruiterName, recruiterEmail, and domain name.
+ */
 
-  await logIn(page);
-  await page.goto(URL);
-  const [jobTitle, company] = await parseCompanyAndJobTitle(page, URL);
-  const domainName = await getDomainName(page, URL);
+const createUpdatedJob = (company, position, date, recruiterName, domainName) => {
+  const updatedJob = new Job(
+    company,
+    position,
+    date,
+    recruiterName,
+    (hasApplied = 'yes'),
+    domainName
+  );
+
+  return updatedJob;
+};
+
+/**
+ * @description: This function individually applies to a job (given a provided link) and returns a Job
+ * class object which contains all of the updated information to be saved into your job tracker.
+ */
+
+const applyToJobAndUpdateJobEntry = async (page, url) => {
+  const submitBtn = '.fontello-paper-plane';
+
+  await page.goto(url);
+  const [jobTitle, company] = await parseCompanyAndJobTitle(page);
+  const domainName = await getDomainName(page, url);
   const recruiter = await getRecruiterName(page);
-
+  const date = new Date().toLocaleString();
   await pasteCoverLetter(page, recruiter, jobTitle, company);
+  await page.waitForSelector(submitBtn);
+  await page.click(submitBtn);
+
+  return createUpdatedJob(company, jobTitle, date, recruiter, domainName);
+};
+
+/**
+ * @description: This function will iterate over each job link entry and return an array of updated
+ * jobs to be saved to your job tracker.
+ */
+
+const applyToAllJobs = async (page, jobLinks) => {
+  const updatedJobs = [];
+  let i = 0;
+
+  while (i < jobLinks.length) {
+    const currentJob = jobLinks[i];
+    const updatedJobEntry = await applyToJobAndUpdateJobEntry(page, currentJob);
+    updatedJobs.push(updatedJobEntry);
+    i++;
+  }
+  return updatedJobs;
+};
+
+module.exports = {
+  applyToAllJobs,
+  logIn
 };
