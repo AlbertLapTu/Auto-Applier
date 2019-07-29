@@ -43,8 +43,8 @@ const writeToSpreadsheet = async (
   company,
   position,
   date,
-  hasApplied,
   recruiterName,
+  recruiterEmail,
   domainName
 ) => {
   const rows = await getSpreadsheetAccess();
@@ -53,9 +53,10 @@ const writeToSpreadsheet = async (
     entry.company = company;
     entry.position = position;
     entry.date = date;
-    entry.hasApplied = hasApplied;
-    entry.recruiterName = recruiterName;
-    entry.domainName = domainName;
+    entry.applied = 'YES';
+    entry.recruiter = recruiterName;
+    entry.email = recruiterEmail;
+    entry.domain = domainName;
     entry.save();
   });
 };

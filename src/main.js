@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const { parseJobLinks, writeToSpreadsheet } = require('./GoogleSheets.js');
 const { applyToAllJobs, logIn } = require('./puppeteer');
+const Recruiter = require('./Classes/Recruiter');
 
 const automationApplier = async () => {
   const browser = await puppeteer.launch({ headless: false });
@@ -10,10 +11,13 @@ const automationApplier = async () => {
   const jobLinks = await parseJobLinks();
 
   const updatedJobLinks = await applyToAllJobs(page, jobLinks);
-  for (job of updatedJobLinks) {
-    const { company, position, date, hasApplied, recruiterName, domainName } = job;
 
-    await writeToSpreadsheet(company, position, date, hasApplied, recruiterName, domainName);
+  for (job of updatedJobLinks) {
+    const { company, position, date, recruiterName, domainName } = job;
+    const recruiter = new Recruiter(recruiterName, domainName);
+    const recruiterEmail = await recruiter.findRecruiter();
+
+    await writeToSpreadsheet(company, position, date, recruiterName, recruiterEmail, domainName);
   }
 
   browser.close();
