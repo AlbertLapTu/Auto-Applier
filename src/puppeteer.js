@@ -122,14 +122,7 @@ const pasteCoverLetter = async (page, hiringManager, position, company) => {
  */
 
 const createUpdatedJob = (company, position, date, recruiterName, domainName) => {
-  const updatedJob = new Job(
-    company,
-    position,
-    date,
-    recruiterName,
-    (hasApplied = 'yes'),
-    domainName
-  );
+  const updatedJob = new Job(company, position, date, recruiterName, domainName);
 
   return updatedJob;
 };
@@ -146,7 +139,7 @@ const applyToJobAndUpdateJobEntry = async (page, url) => {
   const [jobTitle, company] = await parseCompanyAndJobTitle(page);
   const domainName = await getDomainName(page, url);
   const recruiter = await getRecruiterName(page);
-  const date = new Date().toLocaleString();
+  const date = new Date().toLocaleDateString();
   await pasteCoverLetter(page, recruiter, jobTitle, company);
   await page.waitForSelector(submitBtn);
   await page.click(submitBtn);

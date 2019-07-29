@@ -39,13 +39,24 @@ const parseJobLinks = async () => {
   return jobLinks;
 };
 
-const writeToSpreadsheet = async () => {
+const writeToSpreadsheet = async (
+  company,
+  position,
+  date,
+  hasApplied,
+  recruiterName,
+  domainName
+) => {
   const rows = await getSpreadsheetAccess();
-  const currentDate = new Date().toLocaleDateString();
 
   rows.forEach(entry => {
-    entry.date = currentDate;
-    (entry.applied = 'yes'), entry.save();
+    entry.company = company;
+    entry.position = position;
+    entry.date = date;
+    entry.hasApplied = hasApplied;
+    entry.recruiterName = recruiterName;
+    entry.domainName = domainName;
+    entry.save();
   });
 };
 
