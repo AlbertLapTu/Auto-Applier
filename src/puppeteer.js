@@ -54,12 +54,10 @@ const parseCompanyAndJobTitle = async page => {
   const header = '.u-colorGray3';
 
   try {
-    // await page.goto(url);
     const companyAndTitle = await getTextValue(page, header);
     const splitHeader = companyAndTitle.split(' at ');
     let jobTitle = splitHeader[0];
 
-    //TODO: Test to see if this works
     if (jobTitle.includes('-')) {
       jobTitle = jobTitle.split(' - ')[0];
     }
@@ -108,7 +106,6 @@ const getDomainName = async (page, url) => {
 
 const pasteCoverLetter = async (page, hiringManager, position, company) => {
   const textArea = 'textarea[name=note]';
-  const sendApplicationButton = '.c-button.c-button--blue';
 
   try {
     await page.waitFor('.container');
@@ -139,6 +136,7 @@ const createUpdatedJob = (company, position, date, recruiterName, domainName) =>
  * class object which contains all of the updated information to be saved into your job tracker.
  */
 
+//TODO: Once you successfully get one job creation, it keeps continuing and passing it on to the next iteration
 const applyToJobAndUpdateJobEntry = async (page, url) => {
   const submitBtn = '.fontello-paper-plane';
 
@@ -157,6 +155,8 @@ const applyToJobAndUpdateJobEntry = async (page, url) => {
 /**
  * @description: This function will iterate over each job link entry and return an array of updated
  * jobs to be saved to your job tracker.
+ *
+ * @return An array of job objects that have been updated with relevant job information.
  */
 
 const applyToAllJobs = async (page, jobLinks) => {
