@@ -20,7 +20,7 @@ class Recruiter {
         }
       });
     } else {
-      throw new Error('No domain name or full name provided');
+      return 'Cannot find recruiter';
     }
   }
 }
