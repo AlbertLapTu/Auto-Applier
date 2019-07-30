@@ -38,6 +38,9 @@ const getTextValue = async (page, selector) => {
   let innerText;
 
   try {
+    if (page.$(selector) === null) {
+      return '';
+    }
     await page.waitForSelector(selector);
     const element = await page.$(selector);
     innerText = page.evaluate(element => element.textContent, element);
@@ -87,6 +90,10 @@ const getRecruiterName = async page => {
 
 const getDomainName = async (page, url) => {
   const domainClassName = '.website-link';
+
+  if (page.$(domainClassName === null)) {
+    return '';
+  }
 
   try {
     await page.goto(url);
