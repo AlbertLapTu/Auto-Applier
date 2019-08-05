@@ -20,7 +20,9 @@ const logIn = async page => {
     await page.type(emailTextField, username);
     await page.waitForSelector(passwordTextField);
     await page.type(passwordTextField, password);
+    console.log('....after finishing typing');
     await page.click(submitBtn);
+    console.log('.....clicked');
   } catch (err) {
     throw new Error('Invalid error logging in. Check headless browser setting');
   }
@@ -126,9 +128,7 @@ const pasteCoverLetter = async (page, hiringManager, position, company) => {
  */
 
 const createUpdatedJob = (company, position, date, recruiterName, domainName) => {
-  const updatedJob = new Job(company, position, date, recruiterName, domainName);
-
-  return updatedJob;
+  return new Job(company, position, date, recruiterName, domainName);
 };
 
 /**
@@ -148,6 +148,8 @@ const applyToJobAndUpdateJobEntry = async (page, url) => {
   await pasteCoverLetter(page, recruiter, jobTitle, company);
   await page.waitForSelector(submitBtn);
   await page.click(submitBtn);
+
+  console.log(`Recruiter name is:${recruiter} domainName is:${domainName}`);
 
   return createUpdatedJob(company, jobTitle, date, recruiter, domainName);
 };
