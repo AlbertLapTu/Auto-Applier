@@ -1,9 +1,8 @@
 # Project Description
 
-This is a node application that utilizes Google sheets, Puppeteer and Clearbit. This application will
-customize your cover letter, apply to your job application link, and then update your spreadsheet to
-keep track of which jobs you applied for. Should you want to follow-up with the recruiter to check on status,
-you can do that as well.
+This is a node application that utilizes Google sheets, Puppeteer and Clearbit in order to fully automate applying and tracking
+jobs applied through AngelList. . This application will customize your cover letter, apply to your job application link, and
+update your spreadsheet to keep track of which jobs you applied for. Should you want to follow-up with the recruiter to check on status, you can do that as well.
 
 ## Motivation
 
