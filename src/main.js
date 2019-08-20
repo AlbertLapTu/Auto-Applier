@@ -6,15 +6,15 @@ const Recruiter = require('./Classes/Recruiter');
 const automationApplier = async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
+
   await logIn(page);
 
   const jobLinks = await parseJobLinks();
-
   const updatedJobLinks = await applyToAllJobs(page, jobLinks);
 
-  for (job of updatedJobLinks) {
+  for (let job of updatedJobLinks) {
     const { company, position, date, recruiterName, domainName } = job;
-    const recruiter = new Recruiter(recruiterName, domainName);
+    const recruiter = await new Recruiter(recruiterName, domainName);
     const recruiterEmail = await recruiter.findRecruiter();
 
     await writeToSpreadsheet(company, position, date, recruiterName, recruiterEmail, domainName);
