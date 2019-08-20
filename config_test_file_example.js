@@ -13,5 +13,5 @@ module.exports = {
   fullName: 'YOUR NAME',
   spreadsheetId: 'GOOGLE SPREADSHEET ID',
   sheetId: GOOGLE_ID,
-  clearbitKey: 'sk_aacb14c65ea22809049e8c6c64397172'
+  clearbitKey: 'CLEARBIT API KEY'
 };
