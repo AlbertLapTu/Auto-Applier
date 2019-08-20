@@ -13,7 +13,7 @@ class Recruiter {
         domain: this.domainName,
         name: this.fullName
       }).then(persons => {
-        if (persons.length > 0) {
+        if (persons.results.length > 0) {
           return persons.results[0].email;
         } else {
           return null;
